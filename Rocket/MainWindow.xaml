@@ -1,0 +1,73 @@
+﻿<Window x:Class="Rocket.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rocket"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:RectangleSizeConverter x:Key="RectangleSizeConverter" />
+    </Window.Resources>
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="120"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.ColumnSpan="2" HorizontalAlignment="Center">
+            <StackPanel Margin="10" Orientation="Horizontal">
+                <Grid Margin="0,0,20,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Label FontSize="15" HorizontalAlignment="Center">Tên lửa</Label>
+                    <Image Grid.Row="1" x:Name="image" Source="/Rocket.png" />
+                    <ProgressBar x:Name="progress" Grid.Row="1"  Value="80" VerticalAlignment="Bottom" 
+             Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"
+            Width="30"  Foreground="LightSkyBlue" Orientation="Vertical"></ProgressBar>
+                    
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Label FontSize="15">Mực nước</Label>
+                    <StackPanel VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding ElementName=slider, Path=Value,StringFormat='0%'}" HorizontalAlignment="Center" FontSize="15" 
+                              VerticalAlignment="Top"/>
+
+                    <Slider x:Name="slider" HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Bottom"
+Orientation="Vertical"  Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"   
+                        Minimum="0"  Maximum="0.8"  TickFrequency="0.1" TickPlacement="TopLeft"/>
+                    </StackPanel>
+                </Grid>
+                  </StackPanel>
+
+        </Grid>
+        <Grid Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
+            <StackPanel Margin="10" HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button x:Name="btnStart" Width="100" Height="100" Content="START" FontSize="25"
+                       Click="btnStart_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid>
+                                <Ellipse Fill="Blue" />
+                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="btnFire" Click="btnFire_Click" Visibility="Collapsed" Width="100" Height="100" Content="FIRE" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid>
+                                <Ellipse Fill="Red" />
+                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
