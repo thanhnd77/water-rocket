@@ -1,4 +1,6 @@
-﻿using System.IO.Ports;
+﻿using System;
+using System.Diagnostics;
+using System.IO.Ports;
 using System.Speech.Synthesis;
 using System.Text;
 using System.Windows;
@@ -10,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Rocket
 {
@@ -21,26 +24,29 @@ namespace Rocket
         public MainWindow()
         {
             InitializeComponent();
-            this.Loaded+=MainWindow_Loaded;
-        }
-        string state = "Start";
-        public void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
             serialPort = new()
             {
-                PortName = "COM3",
-                BaudRate = 9600
+                PortName = "COM8",
+                BaudRate = 57600,
             };
+            this.Loaded+=MainWindow_Loaded;
+        }
+        string state = "";
+        public double ProgressValue = 0;
+        public void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+           
+            
             try
             {
                 serialPort.DataReceived += SerialDataRecieved;
                 serialPort.Open();
-                while (true)
-                {
-                    string data = serialPort.ReadExisting();
-                    Console.WriteLine(data);
-                    Thread.Sleep(200);
-                }
+                //while (true)
+                //{
+                //    string data = serialPort.ReadExisting();
+                //    Console.WriteLine(data);
+                //    Thread.Sleep(200);
+                //}
             }
             catch(Exception ex) {
                 MessageBox.Show(ex.Message);
@@ -50,7 +56,20 @@ namespace Rocket
 
         public void SerialDataRecieved(object sender, SerialDataReceivedEventArgs e)
         {
-            string inData = serialPort.ReadLine();
+            string inData = serialPort.ReadLine().Replace("\r","");
+            if (inData.EndsWith("R"))
+            {
+                inData = "R";
+                this.Dispatcher.Invoke(() =>
+                {
+                    progress.Dispatcher.Invoke(() => progress.Value = slider.Value, DispatcherPriority.Background);
+                    //progress.Value = slider.Value;
+                });
+            }
+            else if (inData.Length > 10)
+            {
+                inData = inData.Substring(0, inData.Length - 2);
+            }
             Console.WriteLine($"Data Received: {inData}");
             if (inData == "R")
             {
@@ -64,7 +83,11 @@ namespace Rocket
             {
                 if (state == "Start")
                 {
-                   progress.Value=Convert.ToDouble(inData);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        progress.Value = Convert.ToDouble(inData);
+                    });
+                    // progress.Value=Convert.ToDouble(inData);
                 }
                 if (state == "Fire")
                 {
@@ -75,7 +98,35 @@ namespace Rocket
 
         public void Start()
         {
-            serialPort.Write($"W{slider.Value}");
+            try
+            {
+
+                if (!serialPort.IsOpen)
+                {
+                    serialPort.Open();
+                }
+                serialPort.Write("N");
+                btnStart.IsEnabled = false;
+                int percent = (int)(slider.Value * 100);
+                
+                for (int i = 0; i < percent; i+=5)
+                {
+
+                    progress.Dispatcher.Invoke(() => progress.Value = i, DispatcherPriority.Background);
+                    Thread.Sleep(500);
+                    //this.Dispatcher.Invoke(() =>
+                    //{
+                    //    progress.Value = i;
+                       
+                    //});
+                   
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -86,29 +137,60 @@ namespace Rocket
 
         private void KetThucBomNuoc()
         {
-            btnStart.Visibility= Visibility.Hidden;
-            btnFire.Visibility = Visibility.Visible;
+            this.Dispatcher.Invoke(() =>
+            {
+                btnStart.Visibility = Visibility.Hidden;
+                btnFire.Visibility = Visibility.Visible;
+                btnStart.IsEnabled = true;
+            });
+          
+            //btnStart.Visibility = Visibility.Hidden;
+            //btnFire.Visibility = Visibility.Visible;
         }
 
         private void Fire()
         {
-            serialPort.Write($"F");
-            state = "Fire";
+            try
+            {
+                serialPort.Write($"F");
+                state = "Fire";
+            }
+            catch (Exception ex) {
+            MessageBox.Show(ex.Message);
+            }
+        
         }
 
         private void FireCompleted() {
-            progress.Value = 0;
-            slider.Value = 10;
+            this.Dispatcher.Invoke(() =>
+            {
+                progress.Value = 0;
+                slider.Value = 10;
+            });
         }
 
         private void ReadAltitude(string value)
         {
             string message = $"Tên lửa đã đạt độ cao {value}";
             SpeakText(message);
+            this.Dispatcher.Invoke(() =>
+            {
+                btnStart.Visibility = Visibility.Hidden;
+                btnFire.Visibility = Visibility.Hidden;
+                
+                progress.Value = 0;
+                slider.Value = 0;
+                state = "";
+            });
             Thread.Sleep(20 * 1000);
-            btnStart.Visibility = Visibility.Visible;
-            btnFire.Visibility = Visibility.Hidden;
-            state = "Start";
+            this.Dispatcher.Invoke(() =>
+            {
+                btnStart.Visibility = Visibility.Visible;
+                btnFire.Visibility = Visibility.Hidden;
+                progress.Value = 0;
+                slider.Value = 0;
+                state = "";
+            });
         }
 
         private void btnFire_Click(object sender, RoutedEventArgs e)
@@ -120,6 +202,17 @@ namespace Rocket
         {
             SpeechSynthesizer ttssynthesizer = new SpeechSynthesizer();
             ttssynthesizer.Speak(TTS);
+        }
+
+        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            try
+            {
+                serialPort.Write($"W{(int)(e.NewValue * 100)}");
+            }catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
