@@ -30,6 +30,7 @@ namespace Rocket
                 BaudRate = 57600,
             };
             this.Loaded+=MainWindow_Loaded;
+            lblStatus.Content = "Hãy kéo thanh trượt để chọn mức nước (10-70)";
         }
         string state = "";
         public double ProgressValue = 0;
@@ -107,12 +108,13 @@ namespace Rocket
                 }
                 serialPort.Write("N");
                 btnStart.IsEnabled = false;
+                lblStatus.Content= "Hệ thống đang bơm nhiên liệu ... ";
                 int percent = (int)(slider.Value * 100);
                 
                 for (int i = 0; i < percent; i+=5)
                 {
 
-                    progress.Dispatcher.Invoke(() => progress.Value = i, DispatcherPriority.Background);
+                    progress.Dispatcher.Invoke(() => progress.Value = i*1.7, DispatcherPriority.Background);
                     Thread.Sleep(500);
                     //this.Dispatcher.Invoke(() =>
                     //{
@@ -142,6 +144,9 @@ namespace Rocket
                 btnStart.Visibility = Visibility.Hidden;
                 btnFire.Visibility = Visibility.Visible;
                 btnStart.IsEnabled = true;
+                lblStatus.Content = "Hệ thống đã sẵn sàng";
+                //Thread.Sleep(20 * 1000);
+                //Fire();
             });
           
             //btnStart.Visibility = Visibility.Hidden;
@@ -152,8 +157,11 @@ namespace Rocket
         {
             try
             {
-                serialPort.Write($"F");
-                state = "Fire";
+                if (btnFire.Visibility== Visibility.Visible)
+                {
+                    serialPort.Write($"F");
+                    state = "Fire";
+                }
             }
             catch (Exception ex) {
             MessageBox.Show(ex.Message);
@@ -166,6 +174,7 @@ namespace Rocket
             {
                 progress.Value = 0;
                 slider.Value = 10;
+                lblStatus.Content = "Hệ thống đang chuẩn bị cho chu trình tiếp theo ... ";
             });
         }
 
@@ -190,6 +199,7 @@ namespace Rocket
                 progress.Value = 0;
                 slider.Value = 0;
                 state = "";
+                lblStatus.Content = "Hãy kéo thanh trượt để chọn mức nước (10-70)";
             });
         }
 
@@ -201,6 +211,7 @@ namespace Rocket
         private void SpeakText(string TTS)
         {
             SpeechSynthesizer ttssynthesizer = new SpeechSynthesizer();
+            
             ttssynthesizer.Speak(TTS);
         }
 
@@ -208,6 +219,7 @@ namespace Rocket
         {
             try
             {
+              
                 serialPort.Write($"W{(int)(e.NewValue * 100)}");
             }catch(Exception ex)
             {

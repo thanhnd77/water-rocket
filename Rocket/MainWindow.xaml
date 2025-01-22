@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rocket"
-        mc:Ignorable="d" WindowState="Maximized"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d" WindowState="Maximized" WindowStyle="None"
+        Title="MainWindow" >
     <Window.Resources>
         <local:RectangleSizeConverter x:Key="RectangleSizeConverter" />
     </Window.Resources>
@@ -16,58 +16,96 @@
             <RowDefinition Height="120"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2" HorizontalAlignment="Center">
-            <StackPanel Margin="10" Orientation="Horizontal">
-                <Grid Margin="0,0,20,0">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <Label FontSize="15" FontWeight="Bold">
+                        Cách chơi
+                    </Label>
+                    <TextBlock FontSize="20" TextWrapping="WrapWithOverflow">
+                        1.	Kéo thanh trược để chọn mức nước <LineBreak/>
+                        2.	Nhấn nút “Nạp nhiên liệu”, đợi khoảng 20 giây để hệ thống bơm nước. <LineBreak></LineBreak>
+                    3.	Khi hệ thống sẵn sàng, nhấn nút “Bắn” để đẩy tên lửa lên cao. Đợi khoảng 20 giây để hệ thống sẵn sàng cho chu trình mới.
+                    </TextBlock>
+                </StackPanel>
+                <Grid Grid.Column="1" Margin="0,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Label FontSize="15" HorizontalAlignment="Center">Tên lửa</Label>
-                    <Image Grid.Row="1" x:Name="image" Source="/Rocket.png" />
+                    <Label FontSize="15" FontWeight="Bold" HorizontalAlignment="Center">Tên lửa</Label>
+                    <Image Grid.Row="1" x:Name="image" 
+                         VerticalAlignment="Bottom" Margin="0" Source="/Rocket.png" />
                     <ProgressBar x:Name="progress" Grid.Row="1"  Value="0" VerticalAlignment="Bottom"
              Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"
             Width="30"  Foreground="LightSkyBlue" Orientation="Vertical"
-                                 ></ProgressBar>
+                           ></ProgressBar>
                     
                 </Grid>
-                <Grid Grid.Column="1">
-                    <Label FontSize="15">Mực nước</Label>
+                <Grid Grid.Column="2">
+                    <Label FontWeight="Bold" FontSize="15">Mực nước</Label>
                     <StackPanel VerticalAlignment="Bottom">
                     <TextBlock Text="{Binding ElementName=slider, Path=Value,StringFormat='0%'}" HorizontalAlignment="Center" FontSize="15" 
                               VerticalAlignment="Top"/>
-
                     <Slider  ValueChanged="slider_ValueChanged" HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Bottom"
-Orientation="Vertical"  Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"   
-                      Name="slider"  Minimum="0"  Maximum="1"  TickFrequency="0.1" TickPlacement="TopLeft"/>
-                    </StackPanel>
-                </Grid>
-                  </StackPanel>
+Orientation="Vertical"  
+                             Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"   
+                 
+                             Name="slider"  Minimum="0"  Maximum="0.7"  TickFrequency="0.1" TickPlacement="TopLeft"/>
+                        </StackPanel>
+                    </Grid>
+                  </Grid>
 
         </Grid>
         <Grid Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
-            <StackPanel Margin="10" HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button x:Name="btnStart" Width="100" Height="100" Content="START" FontSize="25"
-                       Click="btnStart_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
-                    <Button.Template>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Grid>
-                                <Ellipse Fill="Blue" />
-                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                <Button x:Name="btnFire" Click="btnFire_Click" Visibility="Collapsed" Width="100" Height="100" Content="FIRE" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
-                    <Button.Template>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Grid>
-                                <Ellipse Fill="Red" />
-                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </StackPanel>
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="lblStatus" Grid.Column="0"
+                       Grid.ColumnSpan="2" VerticalAlignment="Center"
+       FontSize="20" HorizontalAlignment="Center"
+       Content="Hệ thống đang bơm nhiên liệu ... "></Label>
+                <StackPanel HorizontalAlignment="Right"
+             Grid.Column="2"
+             Orientation="Horizontal">
+
+                    <Button x:Name="btnStart" Width="100" Height="100"  FontSize="20"
+            Click="btnStart_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
+                        <Button.Content>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">Nạp <LineBreak></LineBreak> nhiên liệu</TextBlock>
+
+                        </Button.Content>
+                        <Button.Template>
+
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Grid>
+
+                                    <Ellipse Fill="Blue" />
+                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="btnFire" Click="btnFire_Click" Visibility="Collapsed" Width="100" Height="100" Content="BẮN" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Grid>
+                                    <Ellipse Fill="Red" />
+                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+           
         </Grid>
 
     </Grid>
