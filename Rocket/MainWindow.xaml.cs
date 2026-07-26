@@ -26,18 +26,18 @@ namespace Rocket
             InitializeComponent();
             serialPort = new()
             {
-                PortName = "COM8",
+                PortName = "COM3",
                 BaudRate = 57600,
             };
-            this.Loaded+=MainWindow_Loaded;
+            this.Loaded += MainWindow_Loaded;
             lblStatus.Content = "Hãy kéo thanh trượt để chọn mức nước (10-70)";
         }
         string state = "";
         public double ProgressValue = 0;
         public void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-           
-            
+
+
             try
             {
                 serialPort.DataReceived += SerialDataRecieved;
@@ -49,7 +49,8 @@ namespace Rocket
                 //    Thread.Sleep(200);
                 //}
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 MessageBox.Show(ex.Message);
             }
         }
@@ -57,43 +58,50 @@ namespace Rocket
 
         public void SerialDataRecieved(object sender, SerialDataReceivedEventArgs e)
         {
-            string inData = serialPort.ReadLine().Replace("\r","");
-            if (inData.EndsWith("R"))
+            try
             {
-                inData = "R";
-                this.Dispatcher.Invoke(() =>
+                string inData = serialPort.ReadLine().Replace("\r", "");
+                if (inData.EndsWith("R"))
                 {
-                    progress.Dispatcher.Invoke(() => progress.Value = slider.Value, DispatcherPriority.Background);
-                    //progress.Value = slider.Value;
-                });
-            }
-            else if (inData.Length > 10)
-            {
-                inData = inData.Substring(0, inData.Length - 2);
-            }
-            Console.WriteLine($"Data Received: {inData}");
-            if (inData == "R")
-            {
-                KetThucBomNuoc();
-            }
-           else if (inData == "D")
-            {
-                FireCompleted();
-            }
-            else
-            {
-                if (state == "Start")
-                {
+                    inData = "R";
                     this.Dispatcher.Invoke(() =>
                     {
-                        progress.Value = Convert.ToDouble(inData);
+                        progress.Dispatcher.Invoke(() => progress.Value = slider.Value, DispatcherPriority.Background);
+                        //progress.Value = slider.Value;
                     });
-                    // progress.Value=Convert.ToDouble(inData);
                 }
-                if (state == "Fire")
+                else if (inData.Length > 10)
                 {
-                    ReadAltitude(inData);
+                    inData = inData.Substring(0, inData.Length - 2);
                 }
+                Console.WriteLine($"Data Received: {inData}");
+                if (inData == "R")
+                {
+                    KetThucBomNuoc();
+                }
+                else if (inData == "D")
+                {
+                    FireCompleted();
+                }
+                else
+                {
+                    if (state == "Start")
+                    {
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            progress.Value = Convert.ToDouble(inData);
+                        });
+                        // progress.Value=Convert.ToDouble(inData);
+                    }
+                    if (state == "Fire")
+                    {
+                        ReadAltitude(inData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message);
             }
         }
 
@@ -107,23 +115,25 @@ namespace Rocket
                     serialPort.Open();
                 }
                 serialPort.Write("N");
+                btnStart.Visibility = Visibility.Hidden;
                 btnStart.IsEnabled = false;
-                lblStatus.Content= "Hệ thống đang bơm nhiên liệu ... ";
+                slider.IsEnabled = false;
+                lblStatus.Content = "Hệ thống đang bơm nhiên liệu \nVui lòng đợi trong giây lát";
                 int percent = (int)(slider.Value * 100);
-                
-                for (int i = 0; i < percent; i+=5)
+
+                for (int i = 0; i < percent; i += 5)
                 {
 
-                    progress.Dispatcher.Invoke(() => progress.Value = i*1.7, DispatcherPriority.Background);
+                    progress.Dispatcher.Invoke(() => progress.Value = i * 1.7, DispatcherPriority.Background);
                     Thread.Sleep(500);
                     //this.Dispatcher.Invoke(() =>
                     //{
                     //    progress.Value = i;
-                       
+
                     //});
-                   
+
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -139,66 +149,95 @@ namespace Rocket
 
         private void KetThucBomNuoc()
         {
-            this.Dispatcher.Invoke(() =>
+            try
             {
+                this.Dispatcher.Invoke(() =>
+                {
+                    btnFire.IsEnabled = true;
+                    btnFire.Visibility = Visibility.Visible;
+                    lblStatus.Content = "Hệ thống đã sẵn sàng";
+                    AutoFire();
+                    //Thread.Sleep(20 * 1000);
+                    //Fire();
+                });
+
+                //btnStart.Visibility = Visibility.Hidden;
+                //btnFire.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void AutoFire()
+        {
+            await Task.Delay(15 * 1000);
+            if (btnFire.IsEnabled && state != "Fire")
+            {
+                serialPort.Write($"F");
+                state = "Fire";
                 btnStart.Visibility = Visibility.Hidden;
-                btnFire.Visibility = Visibility.Visible;
-                btnStart.IsEnabled = true;
-                lblStatus.Content = "Hệ thống đã sẵn sàng";
-                //Thread.Sleep(20 * 1000);
-                //Fire();
-            });
-          
-            //btnStart.Visibility = Visibility.Hidden;
-            //btnFire.Visibility = Visibility.Visible;
+                btnFire.Visibility = Visibility.Collapsed;
+                btnFire.IsEnabled = false;
+            }
         }
 
         private void Fire()
         {
             try
             {
-                if (btnFire.Visibility== Visibility.Visible)
+                if (btnFire.Visibility == Visibility.Visible)
                 {
                     serialPort.Write($"F");
                     state = "Fire";
+                    btnStart.Visibility = Visibility.Hidden;
+                    btnFire.Visibility = Visibility.Collapsed;
+                    btnFire.IsEnabled = false;
                 }
             }
-            catch (Exception ex) {
-            MessageBox.Show(ex.Message);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
-        
+
         }
 
-        private void FireCompleted() {
+        private void FireCompleted()
+        {
             this.Dispatcher.Invoke(() =>
             {
                 progress.Value = 0;
-                slider.Value = 10;
-                lblStatus.Content = "Hệ thống đang chuẩn bị cho chu trình tiếp theo ... ";
+                lblStatus.Content = "Hệ thống đang chuẩn bị cho chu trình tiếp theo \nVui lòng chờ trong giấy lát";
             });
         }
 
         private void ReadAltitude(string value)
         {
-            string message = $"Tên lửa đã đạt độ cao {value}";
-            SpeakText(message);
+            double valueInMeter = int.Parse(value) * 0.01;
+            string message = $"Tên lửa đã đạt độ cao: {valueInMeter.ToString("F2")}m";
             this.Dispatcher.Invoke(() =>
             {
+                lblNotification.Content = message;
+
                 btnStart.Visibility = Visibility.Hidden;
-                btnFire.Visibility = Visibility.Hidden;
-                
+                btnFire.Visibility = Visibility.Collapsed;
+
                 progress.Value = 0;
-                slider.Value = 0;
                 state = "";
             });
+            SpeakText(message);
             Thread.Sleep(20 * 1000);
             this.Dispatcher.Invoke(() =>
             {
-                btnStart.Visibility = Visibility.Visible;
-                btnFire.Visibility = Visibility.Hidden;
+                btnStart.IsEnabled = true;
+                slider.IsEnabled = true;
                 progress.Value = 0;
                 slider.Value = 0;
+                btnFire.Visibility = Visibility.Collapsed;
+                btnStart.Visibility = Visibility.Hidden;
                 state = "";
+                lblNotification.Content = "";
                 lblStatus.Content = "Hãy kéo thanh trượt để chọn mức nước (10-70)";
             });
         }
@@ -211,7 +250,7 @@ namespace Rocket
         private void SpeakText(string TTS)
         {
             SpeechSynthesizer ttssynthesizer = new SpeechSynthesizer();
-            
+
             ttssynthesizer.Speak(TTS);
         }
 
@@ -219,9 +258,15 @@ namespace Rocket
         {
             try
             {
-              
+
                 serialPort.Write($"W{(int)(e.NewValue * 100)}");
-            }catch(Exception ex)
+                this.Dispatcher.Invoke(() =>
+                {
+                    btnStart.Visibility = Visibility.Visible;
+                });
+
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

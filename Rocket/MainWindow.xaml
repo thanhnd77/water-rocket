@@ -5,107 +5,282 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rocket"
         mc:Ignorable="d" WindowState="Maximized" WindowStyle="None"
+        d:DesignHeight="1280" d:DesignWidth="720"
         Title="MainWindow" >
     <Window.Resources>
         <local:RectangleSizeConverter x:Key="RectangleSizeConverter" />
+
+        <SolidColorBrush x:Key="SliderTrackBackground" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="SliderTrackProgress" Color="#2196F3"/>
+        <SolidColorBrush x:Key="SliderThumbBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SliderThumbBorder" Color="#2196F3"/>
+        <SolidColorBrush x:Key="SliderThumbHover" Color="#1E88E5"/>
+
+        <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#2196F3" />
+        </Style>
+
+        <Style x:Key="CustomSliderThumbStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Ellipse x:Name="VisualThumb" 
+                                 Width="45" 
+                                 Height="45" 
+                                 Fill="{StaticResource SliderThumbBackground}" 
+                                 Stroke="{StaticResource SliderThumbBorder}" 
+                                 StrokeThickness="2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SliderStyle" TargetType="{x:Type Slider}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid Background="Transparent">
+                            
+                            <Border x:Name="TrackBackground" 
+                                    CornerRadius="3"
+                                    Background="{StaticResource SliderTrackBackground}">
+                                
+                                <Track x:Name="PART_Track">
+                                    <Track.Thumb>
+                                        <Thumb Style="{StaticResource CustomSliderThumbStyle}" 
+                                               VerticalAlignment="Center" />
+                                    </Track.Thumb>
+                                </Track>
+                                
+                            </Border>
+                            
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
+    
     <Grid>
-        
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="120"></RowDefinition>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="160"/>
         </Grid.RowDefinitions>
-        <Grid Grid.ColumnSpan="2" HorizontalAlignment="Center">
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical">
-                    <Label FontSize="15" FontWeight="Bold">
-                        Cách chơi
-                    </Label>
-                    <TextBlock FontSize="20" TextWrapping="WrapWithOverflow">
-                        1.	Kéo thanh trược để chọn mức nước <LineBreak/>
-                        2.	Nhấn nút “Nạp nhiên liệu”, đợi khoảng 20 giây để hệ thống bơm nước. <LineBreak></LineBreak>
-                    3.	Khi hệ thống sẵn sàng, nhấn nút “Bắn” để đẩy tên lửa lên cao. Đợi khoảng 20 giây để hệ thống sẵn sàng cho chu trình mới.
-                    </TextBlock>
-                </StackPanel>
-                <Grid Grid.Column="1" Margin="0,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Label FontSize="15" FontWeight="Bold" HorizontalAlignment="Center">Tên lửa</Label>
-                    <Image Grid.Row="1" x:Name="image" 
-                         VerticalAlignment="Bottom" Margin="0" Source="/Rocket.png" />
-                    <ProgressBar x:Name="progress" Grid.Row="1"  Value="0" VerticalAlignment="Bottom"
-             Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"
-            Width="30"  Foreground="LightSkyBlue" Orientation="Vertical"
-                           ></ProgressBar>
+        
+        <Label Grid.Row="0" 
+               FontSize="50" 
+               HorizontalAlignment="Center" 
+               Foreground="#2F71C8" 
+               FontWeight="Bold">
+            Mô hình tên lửa nước
+        </Label>
+
+        <Grid Grid.Row="1"
+              HorizontalAlignment="Center"
+              Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+                
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+                
+            <StackPanel 
+                Grid.RowSpan="2" 
+                Orientation="Vertical">
                     
-                </Grid>
-                <Grid Grid.Column="2">
-                    <Label FontWeight="Bold" FontSize="15">Mực nước</Label>
-                    <StackPanel VerticalAlignment="Bottom">
-                    <TextBlock Text="{Binding ElementName=slider, Path=Value,StringFormat='0%'}" HorizontalAlignment="Center" FontSize="15" 
-                              VerticalAlignment="Top"/>
-                    <Slider  ValueChanged="slider_ValueChanged" HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Bottom"
-Orientation="Vertical"  
-                             Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"   
-                 
-                             Name="slider"  Minimum="0"  Maximum="0.7"  TickFrequency="0.1" TickPlacement="TopLeft"/>
-                        </StackPanel>
-                    </Grid>
-                  </Grid>
-
-        </Grid>
-        <Grid Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="lblStatus" Grid.Column="0"
-                       Grid.ColumnSpan="2" VerticalAlignment="Center"
-       FontSize="20" HorizontalAlignment="Center"
-       Content="Hệ thống đang bơm nhiên liệu ... "></Label>
-                <StackPanel HorizontalAlignment="Right"
-             Grid.Column="2"
-             Orientation="Horizontal">
-
-                    <Button x:Name="btnStart" Width="100" Height="100"  FontSize="20"
-            Click="btnStart_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
-                        <Button.Content>
-                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">Nạp <LineBreak></LineBreak> nhiên liệu</TextBlock>
-
-                        </Button.Content>
-                        <Button.Template>
-
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Grid>
-
-                                    <Ellipse Fill="Blue" />
-                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                    <Button x:Name="btnFire" Click="btnFire_Click" Visibility="Collapsed" Width="100" Height="100" Content="BẮN" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White">
-                        <Button.Template>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Grid>
-                                    <Ellipse Fill="Red" />
-                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </StackPanel>
+                <Label Style="{StaticResource LabelStyle}">
+                    Cách chơi
+                </Label>
+                    
+                <TextBlock FontSize="20" 
+                           TextWrapping="WrapWithOverflow">
+                    1.	Kéo thanh trượt để chọn mực nước <LineBreak/> <LineBreak />
+                    2.	Nhấn nút “Nạp nhiên liệu”, đợi khoảng 20 giây để hệ thống bơm nước. <LineBreak/> <LineBreak />
+                    3.	Khi hệ thống đã sẵn sàng, nhấn nút “Bắn” để đẩy tên lửa lên cao. Đợi khoảng 20 giây để hệ thống sẵn sàng cho chu trình mới.<LineBreak/>
+                </TextBlock>
+                    
+                <Label Style="{StaticResource LabelStyle}">
+                    <TextBlock TextWrapping="WrapWithOverflow">
+                        Làm sao để tên lửa bay cao nhất?
+                    </TextBlock>
+                </Label>
+                    
+                <TextBlock FontSize="20" 
+                           TextWrapping="WrapWithOverflow">
+                    Vì không khí lưu trữ phần lớn năng lượng bên trong tên lửa, nên cần phải tìm được tỷ lệ cân bằng chính xác giữa thể tích nước và không khí.<LineBreak/> <LineBreak />
+                    Nếu lượng nước quá nhiều hay quá ít, hiệu suất của tên lửa đều sẽ không đạt mức tối ưu.<LineBreak/> <LineBreak />
+                    Theo thực nghiệm, <Bold>nước-không khí</Bold> với tỉ lệ khoảng <Bold>1:2</Bold> thường được coi là hiệu quả nhất.
+                </TextBlock>
+                    
+            </StackPanel>
+                
+            <Label x:Name="lblNotification"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   FontSize="30"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="#0FB043"
+                   Content=""/>
+                
+            <Grid Grid.Column="1"
+                  Grid.Row="1"
+                  VerticalAlignment="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                    
+                <Label Style="{StaticResource LabelStyle}"
+                       HorizontalAlignment="Center">
+                    Tên lửa
+                </Label>
+                    
+                <Image Grid.Row="1" 
+                       x:Name="image"
+                       VerticalAlignment="Bottom" 
+                       Margin="0" 
+                       Source="/Rocket.png" />
+                    
+                <ProgressBar x:Name="progress" 
+                             Grid.Row="1"
+                             Value="0" 
+                             VerticalAlignment="Bottom"
+                             Height="{Binding ElementName=image, Path=ActualHeight, Converter={StaticResource RectangleSizeConverter}}"
+                             Width="30"  
+                             Foreground="LightSkyBlue" 
+                             Orientation="Vertical"/>
+                
             </Grid>
-           
+
+            <StackPanel Grid.Column="2"
+                        Grid.Row="1"
+                        VerticalAlignment="Bottom">
+
+                <Label Style="{StaticResource LabelStyle}">
+                    <TextBlock TextAlignment="Center" 
+                               HorizontalAlignment="Center" 
+                               TextWrapping="WrapWithOverflow">
+                        Chọn<LineBreak/>mực nước
+                    </TextBlock>
+                </Label>
+
+                <TextBlock Text="{Binding ElementName=slider, Path=Value,StringFormat='0%'}" 
+                           HorizontalAlignment="Center" 
+                           FontSize="25"
+                           VerticalAlignment="Top"/>
+
+                <Slider ValueChanged="slider_ValueChanged" 
+                        Grid.Column="1" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Bottom" Orientation="Vertical"  
+                        Height="{Binding ElementName=image, Path=ActualHeight, 
+                    Converter={StaticResource RectangleSizeConverter}}"
+                        Name="slider" 
+                        Minimum="0" 
+                        Maximum="0.7" 
+                        TickFrequency="0.1" 
+                        TickPlacement="TopLeft" 
+                        IsMoveToPointEnabled="True" 
+                        Style="{StaticResource SliderStyle}" />
+
+            </StackPanel>
+            
+        </Grid>
+
+        <Grid Grid.Row="2"
+              Margin="24 10 24 50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label x:Name="lblStatus"
+                   Grid.Column="0"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   FontSize="25"
+                   HorizontalAlignment="Center">
+                Hệ thống đang bơm nhiên liệu ...
+            </Label>
+            
+            <StackPanel HorizontalAlignment="Right"
+                        Grid.Column="1"
+                        Orientation="Horizontal">
+                
+                <Button x:Name="btnStart" 
+                        Click="btnStart_Click" 
+                        Visibility="Hidden"
+                        Width="100" 
+                        Height="100"  
+                        FontSize="20"
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Foreground="White">
+                    
+                    <Button.Content>
+                        <TextBlock TextAlignment="Center" 
+                                   TextWrapping="Wrap">
+                                Nạp<LineBreak/> nhiên liệu
+                        </TextBlock>
+                    </Button.Content>
+                    
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid>
+                                
+                                <Ellipse Fill="Blue" />
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                                
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                    
+                </Button>
+
+                <Button x:Name="btnFire" 
+                        Click="btnFire_Click" 
+                        Visibility="Collapsed" 
+                        Width="100" 
+                        Height="100" 
+                        FontSize="25" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Foreground="White"
+                        Content="BẮN">
+                    
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid>
+                                
+                                <Ellipse Fill="Red" />
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                                
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                    
+                </Button>
+                
+            </StackPanel>
+
         </Grid>
 
     </Grid>
