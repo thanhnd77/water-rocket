@@ -78,11 +78,12 @@ namespace Rocket
 
                 if (inData == "R")
                 {
-                    if (state != "done")
-                    {
-                        KetThucBomNuoc();
-                        state = "done";
-                    }
+                    KetThucBomNuoc();
+                    //if (state != "done")
+                    //{
+                    //    KetThucBomNuoc();
+                    //    state = "done";
+                    //}
                 }
                 else if (inData == "D")
                 {
@@ -139,7 +140,7 @@ namespace Rocket
 
                 }
 
-                AutoFinish();
+                //AutoFinish();
 
             }
             catch (Exception ex)
@@ -154,15 +155,15 @@ namespace Rocket
             //ReadAltitude("120");
         }
 
-        private async void AutoFinish()
-        {
-            await Task.Delay(10 * 1000);
-            if (state != "done")
-            {
-                KetThucBomNuoc();
-                state = "done";
-            }
-        }
+        //private async void AutoFinish()
+        //{
+        //    await Task.Delay(10 * 1000);
+        //    if (state != "done")
+        //    {
+        //        KetThucBomNuoc();
+        //        state = "done";
+        //    }
+        //}
 
         private void KetThucBomNuoc()
         {
