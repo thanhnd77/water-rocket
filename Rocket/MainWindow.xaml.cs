@@ -75,9 +75,14 @@ namespace Rocket
                     inData = inData.Substring(0, inData.Length - 2);
                 }
                 Console.WriteLine($"Data Received: {inData}");
+
                 if (inData == "R")
                 {
-                    KetThucBomNuoc();
+                    if (state != "done")
+                    {
+                        KetThucBomNuoc();
+                        state = "done";
+                    }
                 }
                 else if (inData == "D")
                 {
@@ -134,6 +139,8 @@ namespace Rocket
 
                 }
 
+                AutoFinish();
+
             }
             catch (Exception ex)
             {
@@ -145,6 +152,16 @@ namespace Rocket
         {
             Start();
             //ReadAltitude("120");
+        }
+
+        private async void AutoFinish()
+        {
+            await Task.Delay(10 * 1000);
+            if (state != "done")
+            {
+                KetThucBomNuoc();
+                state = "done";
+            }
         }
 
         private void KetThucBomNuoc()
