@@ -4,7 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rocket"
-        mc:Ignorable="d" WindowState="Maximized" WindowStyle="None"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        WindowState="Maximized"
+        Topmost="True"
+        Cursor="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
         d:DesignHeight="1280" d:DesignWidth="720"
         Title="MainWindow" >
     <Window.Resources>
