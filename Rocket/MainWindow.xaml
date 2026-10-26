@@ -197,7 +197,7 @@
                     Converter={StaticResource RectangleSizeConverter}}"
                         Name="slider" 
                         Minimum="0" 
-                        Maximum="0.7" 
+                        Maximum="0.6" 
                         TickFrequency="0.1" 
                         TickPlacement="TopLeft" 
                         IsMoveToPointEnabled="True" 

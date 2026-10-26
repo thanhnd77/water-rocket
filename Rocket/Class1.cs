@@ -13,7 +13,7 @@ namespace Rocket
 
         public object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return System.Convert.ToDouble(value) * .8;
+            return System.Convert.ToDouble(value) * .7;
         }
 
         public object ConvertBack(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)

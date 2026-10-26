@@ -125,20 +125,20 @@ namespace Rocket
                 btnStart.IsEnabled = false;
                 slider.IsEnabled = false;
                 lblStatus.Content = "Hệ thống đang bơm nhiên liệu \nVui lòng đợi trong giây lát";
-                int percent = (int)(slider.Value * 100);
+                //int percent = (int)(slider.Value * 100);
 
-                for (int i = 0; i < percent; i += 5)
-                {
+                //for (int i = 0; i < percent; i += 5)
+                //{
 
-                    progress.Dispatcher.Invoke(() => progress.Value = i * 1.7, DispatcherPriority.Background);
-                    Thread.Sleep(500);
-                    //this.Dispatcher.Invoke(() =>
-                    //{
-                    //    progress.Value = i;
+                //    progress.Dispatcher.Invoke(() => progress.Value = i * 1.7, DispatcherPriority.Background);
+                //    Thread.Sleep(500);
+                //    //this.Dispatcher.Invoke(() =>
+                //    //{
+                //    //    progress.Value = i;
 
-                    //});
+                //    //});
 
-                }
+                //}
 
                 //AutoFinish();
 
@@ -268,6 +268,8 @@ namespace Rocket
         private void SpeakText(string TTS)
         {
             SpeechSynthesizer ttssynthesizer = new SpeechSynthesizer();
+
+            ttssynthesizer.SelectVoiceByHints(VoiceGender.Neutral, VoiceAge.NotSet, 0, new System.Globalization.CultureInfo("vi-VN"));
 
             ttssynthesizer.Speak(TTS);
         }

@@ -1,2 +1,2 @@
 git pull
-timeout /t 5
+timeout /t 10
