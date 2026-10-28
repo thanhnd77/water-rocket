@@ -122,7 +122,7 @@ void loop()
         }
           
        Serial.println(500-Dis);// xuất giá trị độ cao.
-       delay(3000);
+       delay(8000);
        digitalWrite(CC, LOW);// tắt căng cáp.                        
     } 
     }

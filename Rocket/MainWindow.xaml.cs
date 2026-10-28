@@ -120,6 +120,7 @@ namespace Rocket
                 {
                     serialPort.Open();
                 }
+                state = "Start";
                 serialPort.Write("N");
                 btnStart.Visibility = Visibility.Hidden;
                 btnStart.IsEnabled = false;
