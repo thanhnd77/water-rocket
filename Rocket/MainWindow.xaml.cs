@@ -131,7 +131,7 @@ namespace Rocket
                 for (int i = 0; i < percent; i += 5)
                 {
 
-                    progress.Dispatcher.Invoke(() => progress.Value = i * 1.8, DispatcherPriority.Background);
+                    progress.Dispatcher.Invoke(() => progress.Value = i * 1.7, DispatcherPriority.Background);
                     Thread.Sleep(500);
                     //this.Dispatcher.Invoke(() =>
                     //{
