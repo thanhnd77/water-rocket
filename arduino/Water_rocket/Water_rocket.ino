@@ -79,7 +79,7 @@ void loop()
             count1= int(count/90); //count2 = 10* count1; // 1/64.7
            // if ((count1 % 5 == 0 )&&(count % 5 == 0 )) // cứ 5% mới báo 1 lần
 		 if ((count1!=0)&&(count1 *90 == count))// && (count1%5 ==0))
-			{ Serial.print(count1);}
+			{ Serial.println(count1);}
 		}
       }
       count =0;

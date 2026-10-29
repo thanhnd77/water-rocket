@@ -66,7 +66,7 @@ namespace Rocket
                     inData = "R";
                     this.Dispatcher.Invoke(() =>
                     {
-                        progress.Dispatcher.Invoke(() => progress.Value = slider.Value, DispatcherPriority.Background);
+                        progress.Dispatcher.Invoke(() => progress.Value = slider.Value*167, DispatcherPriority.Background);
                         //progress.Value = slider.Value;
                     });
                 }
@@ -74,7 +74,7 @@ namespace Rocket
                 {
                     inData = inData.Substring(0, inData.Length - 2);
                 }
-                Console.WriteLine($"Data Received: {inData}");
+                Debug.WriteLine($"Data Received: {inData}");
 
                 if (inData == "R")
                 {
@@ -95,7 +95,7 @@ namespace Rocket
                     {
                         this.Dispatcher.Invoke(() =>
                         {
-                            progress.Value = Convert.ToDouble(inData);
+                            progress.Value = Convert.ToDouble(inData) * 1.67;
                         });
                         // progress.Value=Convert.ToDouble(inData);
                     }
@@ -126,20 +126,20 @@ namespace Rocket
                 btnStart.IsEnabled = false;
                 slider.IsEnabled = false;
                 lblStatus.Content = "Hệ thống đang bơm nhiên liệu \nVui lòng đợi trong giây lát";
-                int percent = (int)(slider.Value * 100);
+                //int percent = (int)(slider.Value * 100);
 
-                for (int i = 0; i < percent; i += 5)
-                {
+                //for (int i = 0; i < percent; i += 5)
+                //{
 
-                    progress.Dispatcher.Invoke(() => progress.Value = i * 1.8, DispatcherPriority.Background);
-                    Thread.Sleep(500);
-                    //this.Dispatcher.Invoke(() =>
-                    //{
-                    //    progress.Value = i;
+                //    progress.Dispatcher.Invoke(() => progress.Value = i * 1.8, DispatcherPriority.Background);
+                //    Thread.Sleep(500);
+                //    //this.Dispatcher.Invoke(() =>
+                //    //{
+                //    //    progress.Value = i;
 
-                    //});
+                //    //});
 
-                }
+                //}
 
                 //AutoFinish();
 
@@ -234,7 +234,7 @@ namespace Rocket
         private void ReadAltitude(string value)
         {
             double valueInMeter = int.Parse(value) * 0.01;
-            string message = $"Tên lửa đã đạt độ cao: {valueInMeter.ToString("F2")}m";
+            string message = $"Tên lửa đã đạt độ cao: {valueInMeter.ToString("F2").Replace('.',',')} mét";
             this.Dispatcher.Invoke(() =>
             {
                 lblNotification.Content = message;
@@ -270,7 +270,8 @@ namespace Rocket
         {
             SpeechSynthesizer ttssynthesizer = new SpeechSynthesizer();
 
-            ttssynthesizer.SelectVoiceByHints(VoiceGender.Neutral, VoiceAge.NotSet, 0, new System.Globalization.CultureInfo("vi-VN"));
+            ttssynthesizer.SelectVoice("Microsoft An");
+            ttssynthesizer.Rate = -2;
 
             ttssynthesizer.Speak(TTS);
         }
